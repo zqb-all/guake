@@ -71,11 +71,32 @@ QUICK_OPEN_MATCHERS = [
      r"^\s\sFile\s\".*\",\sline\s[0-9]+",
      r"^\s\sFile\s\"(.*)\",\sline\s([0-9]+)"),
     ("line starts by 'Filename:line' pattern (GCC/make). File path should exists.",
-     r"^[-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+\:[0-9]+",
-     r"^(.*)\:([0-9]+)"),
+     r"[-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+\:[0-9]+",
+     r"(.*)\:([0-9]+)"),
     ("line containing '/home/' absolute path",
      r"(/home/[-a-zA-Z0-9_\./]+)(:[0-9]+)?",
-     r"(/home/[-a-zA-Z0-9_\./]+):?([0-9]+)?")
+     r"(/home/[-a-zA-Z0-9_\./]+):?([0-9]+)?"),
+#    ("line containing './' path",
+#     r"(./[-a-zA-Z0-9_\./]+)(:[0-9]+)?",
+#     r"(\./[-a-zA-Z0-9_\./]+):?([0-9]+)?"),
+    ("line starts with ^I xxx: , such as changes part of git status",
+     r"^(	[^ ]*\ +[-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+)(:[0-9]+)?",
+     r"^	[^ ]*\ +([-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+):?([0-9]+)?"),
+    ("line starts with ^I , such as untracked part of git status",
+     r"^(	+[-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+)(:[0-9]+)?",
+     r"^	([-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+):?([0-9]+)?"),
+    ("line starts with --- a/ or +++ b/, such as output of git diff",
+     r"^([+-]{3} [ab]{1}\/[-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+)(:[0-9]+)?",
+     r"^[+-]{3} [ab]{1}\/([-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+):?([0-9]+)?"),
+#    ("line starts with #xxx FILE: , such as checkpatch",
+#    r"^[#0-9]+\:\ FILE\:\ [-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+\:[0-9]+?",
+#    r"^[#0-9]+\:\ FILE\:\ ([-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+)\:?([0-9]+)?")
+    ("line starts with FILExxx: , such as changes part of git status",
+        r"(FILE[^\ ]?\ +[-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+)(:[0-9]+)?",
+        r"FILE[^\ ]?\ +([-a-zA-Z0-9\/\_\.\ ]+\.?[a-zA-Z0-9]+):?([0-9]+)?"),
+#   ("line containing 'FILE:' absolute path",
+#    r"(FILE[^ ]*\ *[-a-zA-Z0-9_\./]+)(:[0-9]+)?",
+#    r"FILE[^ ]*\ *([-a-zA-Z0-9_\./]+):?([0-9]+)?"),
 ]
 
 
@@ -170,7 +191,9 @@ class GuakeTerminal(vte.Terminal):
                         filepath = filename
                         line_number = g.group(2)
                         if line_number is None:
-                            line_number = "1"
+                            line_number = ""
+                        else:
+                            line_number = '+'  + line_number
                         if not quick_open_in_current_terminal:
                             curdir = self.get_current_directory()
                             filepath = os.path.join(curdir, filename)
