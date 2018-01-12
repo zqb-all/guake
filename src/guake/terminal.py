@@ -196,7 +196,6 @@ class GuakeTerminal(vte.Terminal):
                 for _useless, _otheruseless, extractor in QUICK_OPEN_MATCHERS:
                     g = re.compile(extractor).match(value)
                     if g and len(g.groups()) > 0:
-                        self.feed_child("\n")
                         filename = g.group(1).strip()
                         filepath = filename
                         line_number = g.group(2)
@@ -238,8 +237,6 @@ class GuakeTerminal(vte.Terminal):
                             logging.debug("Executing it in current tab")
                             if resolved_cmdline[-1] != '\n':
                                 resolved_cmdline += '\n'
-                            self.feed_child("\n")
-                            sleep(1)
                             self.feed_child(resolved_cmdline)
                         else:
                             logging.debug("Executing it independently")
