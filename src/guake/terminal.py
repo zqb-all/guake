@@ -230,7 +230,7 @@ class GuakeTerminal(vte.Terminal):
                         # We do not test for file existence, because it doesn't work in ssh
                         # sessions.
                         logging.debug("Opening file %s at line %s", filepath, line_number)
-                        resolved_cmdline = cmdline % {"file_path": filepath,
+                        resolved_cmdline = 'q\n'+cmdline % {"file_path": filepath,
                                                       "line_number": line_number}
                         logging.debug("Command line: %s", resolved_cmdline)
                         if quick_open_in_current_terminal:
